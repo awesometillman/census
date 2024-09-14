@@ -17,6 +17,28 @@
 import pandas as pd
 import sys
 
+def check_col_names(format, input):
+    col_names_match = True
+
+    for i in range(len(input.columns)):
+        if not format["Variable_Name"][i] == input.columns[i]:
+            print("Invalid column name: expected", format["Variable_Name"][i], "but got",
+                  input.columns[i])
+            col_names_match = False
+
+    return col_names_match
+
+def check_col_dtypes(format, input):
+    col_dtypes_match = True
+
+    for i in range(len(input.columns)):
+        if not format["Data_Type"][i] == input.dtypes.iloc[i]:
+            print("Invalid data type of", format["Variable_Name"][i] + ": expected", 
+                  format["Data_Type"][i], "but got", input.dtypes.iloc[i])
+            col_dtypes_match = False
+
+    return col_dtypes_match
+
 def main():
     vars_info = [["Record_Number", int, [1, 63388]],
                 ["Region", object, ["S92000003"]],
@@ -39,13 +61,11 @@ def main():
     format_df = pd.DataFrame(vars_info, columns = ["Variable_Name", "Data_Type", "Accepted_Vals"])
     input_df = pd.read_csv(sys.argv[1])
 
-    col_names_match = True
-    for i in range(len(input_df.columns)):
-        if not format_df["Variable_Name"][i] == input_df.columns[i]:
-            print("Invalid column name:", format_df["Variable_Name"][i], "!=", input_df.columns[i])
-            col_names_match = False
-    if col_names_match:
+    if check_col_names(format_df, input_df):
         print("All column names match.")
+
+        if check_col_dtypes(format_df, input_df):
+            print("All data types match.")
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

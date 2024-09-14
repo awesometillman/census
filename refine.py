@@ -59,8 +59,9 @@ def check_col_vals(format, input):
                 entry = column[i]
 
                 if (entry < lower) or (upper < entry):
-                    print("Entry out of range in", input.columns[index], "column")
-                    print(entry, i)
+                    print("Entry out of range in", input.columns[index], "column:")
+                    print("(row", str(i) + ")", entry, "not between",
+                          lower, "and", upper)
                     all_vals_accepted = False
         else:
             column = input[format["Variable_Name"][index]]
@@ -70,8 +71,9 @@ def check_col_vals(format, input):
                 entry = column[i]
 
                 if not entry in format["Accepted_Vals"][index]:
-                    print("Entry out of range in", input.columns[index], "column:")
-                    print(entry, i)
+                    print("Invalid entry in", input.columns[index], "column:")
+                    print("(row", str(i) + ") '" + str(entry) +
+                          "' not in list", format["Accepted_Vals"][index])
                     all_vals_accepted = False
 
     return all_vals_accepted

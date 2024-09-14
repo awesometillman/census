@@ -15,24 +15,39 @@
 #    the refinement process should be documented (e.g. using comments in the code) in case one may need to modify and re-run it (although it’s not necessary to repeat it each time while re-running the analysis),
 
 import pandas as pd
+import sys
 
-vars_info = [["Record_Number", int, [1, 63388]],
-             ["Region", object, ["S92000003"]],
-             ["RESIDENCY_TYPE", object, ["C", "P"]],
-             ["Family_Composition", object, ["0", "1", "2", "3", "4", "5", "X"]],
-             ["sex", int, [1, 2]],
-             ["age", int, [1, 8]],
-             ["Marital_Status", int, [1, 5]],
-             ["student", int, [1, 2]],
-             ["health", int, [1, 5]],
-             ["Ethnic_Group", int, [1, 6]],
-             ["religion", int, [1, 9]],
-             ["Economic_Activity", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "X"]],
-             ["Occupation", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "X"]],
-             ["industry", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "X"]],
-             ["Hours_Worked_Per_Week", object, ["1", "2", "3", "4", "X"]],
-             ["Approximage_Social_Grade", object, ["1", "2", "3", "4", "X"]]]
+def main():
+    vars_info = [["Record_Number", int, [1, 63388]],
+                ["Region", object, ["S92000003"]],
+                ["RESIDENCE_TYPE", object, ["C", "P"]],
+                ["Family_Composition", object, ["0", "1", "2", "3", "4", "5", "X"]],
+                ["sex", int, [1, 2]],
+                ["age", int, [1, 8]],
+                ["Marital_Status", int, [1, 5]],
+                ["student", int, [1, 2]],
+                ["Country_Of_Birth", int, [1, 2]],
+                ["health", int, [1, 5]],
+                ["Ethnic_Group", int, [1, 6]],
+                ["religion", int, [1, 9]],
+                ["Economic_Activity", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "X"]],
+                ["Occupation", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "X"]],
+                ["industry", object, ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "X"]],
+                ["Hours_Worked_Per_Week", object, ["1", "2", "3", "4", "X"]],
+                ["Approximate_Social_Grade", object, ["1", "2", "3", "4", "X"]]]
 
-format_df = pd.DataFrame(vars_info, columns = ["Variable Name", "Data Type", "Accepted Vals"])
+    format_df = pd.DataFrame(vars_info, columns = ["Variable_Name", "Data_Type", "Accepted_Vals"])
+    input_df = pd.read_csv(sys.argv[1])
 
-print(format_df)
+    col_names_match = True
+    for i in range(len(input_df.columns)):
+        if not format_df["Variable_Name"][i] == input_df.columns[i]:
+            print("Invalid column name:", format_df["Variable_Name"][i], "!=", input_df.columns[i])
+            col_names_match = False
+    if col_names_match:
+        print("All column names match.")
+
+if __name__ == "__main__":
+    print("script name is", sys.argv[0])
+    if (len(sys.argv) == 2):
+        main()

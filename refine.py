@@ -18,7 +18,7 @@ import pandas as pd
 import sys
 
 def check_col_names(format, input):
-    """Checks column names of input dataframe match required format"""
+    """Checks that column names of input dataframe match required format"""
 
     col_names_match = True
 
@@ -31,7 +31,7 @@ def check_col_names(format, input):
     return col_names_match
 
 def check_col_dtypes(format, input):
-    """Checks the data types of input dataframe columns are correct"""
+    """Checks that data types of input dataframe columns are correct"""
 
     col_dtypes_match = True
 
@@ -44,7 +44,7 @@ def check_col_dtypes(format, input):
     return col_dtypes_match
 
 def check_col_vals(format, input):
-    """Checks the values of each column of input dataframe are within expected range"""
+    """Checks that values of each column of input dataframe are within expected range"""
 
     all_vals_accepted = True
 
@@ -54,7 +54,7 @@ def check_col_vals(format, input):
             lower = format["Accepted_Vals"][index][0]
             upper = format["Accepted_Vals"][index][1]
 
-            # Check that every entry in this column is between the lower and upper values
+            # Check that entries in every numerical column are within specified range
             for i in range(len(column)):
                 entry = column[i]
 
@@ -66,7 +66,7 @@ def check_col_vals(format, input):
         else:
             column = input[format["Variable_Name"][index]]
 
-            # Check that every entry in this column is on the list of accepted values
+            # Check that entries in every categorical column are on the specified list
             for i in range(len(column)):
                 entry = column[i]
 
@@ -77,6 +77,15 @@ def check_col_vals(format, input):
                     all_vals_accepted = False
 
     return all_vals_accepted
+
+def remove_duplicates(input):
+    """Removes duplicate rows of input dataframe and returns new dataframe"""
+
+    output = input
+
+    #TODO: Write code so that this function works, and think about if we remove "similar people"
+
+    return output
 
 def main():
     """Checks and refines input data"""
@@ -112,6 +121,10 @@ def main():
 
             if check_col_vals(format_df, input_df):
                 print("All entries are acceptable values.")
+
+                output_df = remove_duplicates(input_df)
+
+                #TODO: Write code which saves the output_df in a new .csv file
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

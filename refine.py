@@ -18,6 +18,8 @@ import pandas as pd
 import sys
 
 def check_col_names(format, input):
+    """Checks column names of input dataframe match required format"""
+
     col_names_match = True
 
     for i in range(len(input.columns)):
@@ -29,6 +31,8 @@ def check_col_names(format, input):
     return col_names_match
 
 def check_col_dtypes(format, input):
+    """Checks the data types of input dataframe columns are correct"""
+
     col_dtypes_match = True
 
     for i in range(len(input.columns)):
@@ -39,7 +43,43 @@ def check_col_dtypes(format, input):
 
     return col_dtypes_match
 
+def check_col_vals(format, input):
+    """Checks the values of each column of input dataframe are within expected range"""
+
+    all_vals_accepted = True
+
+    for index in range(len(input.columns)):
+        if format["Data_Type"][index] == int:
+            column = input[format["Variable_Name"][index]]
+            lower = format["Accepted_Vals"][index][0]
+            upper = format["Accepted_Vals"][index][1]
+
+            # Check that every entry in this column is between the lower and upper values
+            for i in range(len(column)):
+                entry = column[i]
+
+                if (entry < lower) or (upper < entry):
+                    print("Entry out of range in", input.columns[index], "column")
+                    print(entry, i)
+                    all_vals_accepted = False
+        else:
+            column = input[format["Variable_Name"][index]]
+
+            # Check that every entry in this column is on the list of accepted values
+            for i in range(len(column)):
+                entry = column[i]
+
+                if not entry in format["Accepted_Vals"][index]:
+                    print("Entry out of range in", input.columns[index], "column:")
+                    print(entry, i)
+                    all_vals_accepted = False
+
+    return all_vals_accepted
+
 def main():
+    """Checks and refines input data"""
+
+    # Create dataframe containing the required format for input data
     vars_info = [["Record_Number", int, [1, 63388]],
                 ["Region", object, ["S92000003"]],
                 ["RESIDENCE_TYPE", object, ["C", "P"]],
@@ -61,11 +101,15 @@ def main():
     format_df = pd.DataFrame(vars_info, columns = ["Variable_Name", "Data_Type", "Accepted_Vals"])
     input_df = pd.read_csv(sys.argv[1])
 
+    # Perform all checks on input data
     if check_col_names(format_df, input_df):
         print("All column names match.")
 
         if check_col_dtypes(format_df, input_df):
             print("All data types match.")
+
+            if check_col_vals(format_df, input_df):
+                print("All entries are acceptable values.")
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

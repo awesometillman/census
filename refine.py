@@ -43,14 +43,16 @@ def check_col_dtypes(format, input):
 
     return col_dtypes_match
 
-def check_col_vals(format, input):
-    """Checks that values of each column of input dataframe are within expected range"""
+def remove_bad_rows(format, input):
+    """Removes rows which contain invalid entries in at least one column"""
 
-    all_vals_accepted = True
+    output = input
+    drop_list = []
 
-    for index in range(len(input.columns)):
+    for index in range(len(output.columns)):
+
         if format["Data_Type"][index] == int:
-            column = input[format["Variable_Name"][index]]
+            column = output[format["Variable_Name"][index]]
             lower = format["Accepted_Vals"][index][0]
             upper = format["Accepted_Vals"][index][1]
 
@@ -59,24 +61,26 @@ def check_col_vals(format, input):
                 entry = column[i]
 
                 if (entry < lower) or (upper < entry):
-                    print("Entry out of range in", input.columns[index], "column:")
+                    print("Entry out of range in", output.columns[index], "column:")
                     print("(row", str(i) + ")", entry, "not between",
                           lower, "and", upper)
-                    all_vals_accepted = False
+                    drop_list.append(i)
         else:
-            column = input[format["Variable_Name"][index]]
+            column = output[format["Variable_Name"][index]]
 
             # Check that entries in every categorical column are on the specified list
             for i in range(len(column)):
                 entry = column[i]
 
                 if not entry in format["Accepted_Vals"][index]:
-                    print("Invalid entry in", input.columns[index], "column:")
+                    print("Invalid entry in", output.columns[index], "column:")
                     print("(row", str(i) + ") '" + str(entry) +
                           "' not in list", format["Accepted_Vals"][index])
-                    all_vals_accepted = False
-
-    return all_vals_accepted
+                    drop_list.append(i)
+    
+    output = output.drop(drop_list)
+                    
+    return output
 
 def main():
     """Checks and refines input data"""
@@ -110,14 +114,15 @@ def main():
         if check_col_dtypes(format_df, input_df):
             print("All data types match.")
 
-            if check_col_vals(format_df, input_df):
-                print("All entries are acceptable values.")
+            print("Rows before removing invalid entries:", input_df.shape[0])
+            output_df = remove_bad_rows(format_df, input_df)
+            print("Rows after removing invalid entries:", output_df.shape[0])
 
-                print("Rows before deleting duplicates:", input_df.shape[0])
-                output_df = input_df.drop_duplicates()
-                print("Rows after deleting duplicates:", output_df.shape[0])
+            print("Rows before deleting duplicates:", output_df.shape[0])
+            output_df = output_df.drop_duplicates()
+            print("Rows after deleting duplicates:", output_df.shape[0])
 
-                #TODO: Write code which saves the output_df in a new .csv file
+            #TODO: Write code which saves the output_df in a new .csv file
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

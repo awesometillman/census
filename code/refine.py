@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# You must be in a subdirectory of 'census' to run this code
+
 import pandas as pd
 import sys
 

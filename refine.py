@@ -122,7 +122,8 @@ def main():
             output_df = output_df.drop_duplicates()
             print("Rows after deleting duplicates:", output_df.shape[0])
 
-            #TODO: Write code which saves the output_df in a new .csv file
+            output_df.to_csv("Refined_dataset.csv", index = False)
+            print("Created Refined_dataset.csv")
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

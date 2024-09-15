@@ -129,7 +129,7 @@ def main():
             print("Rows after deleting duplicates:", output_df.shape[0])
 
             # Output refined dataset to a csv file to be used later
-            output_df.to_csv("Refined_dataset.csv", index = False)
+            output_df.to_csv("../data/Refined_dataset.csv", index = False)
             print("Successfully wrote to Refined_dataset.csv")
 
 if __name__ == "__main__":

@@ -78,15 +78,6 @@ def check_col_vals(format, input):
 
     return all_vals_accepted
 
-def remove_duplicates(input):
-    """Removes duplicate rows of input dataframe and returns new dataframe"""
-
-    output = input
-
-    #TODO: Write code so that this function works, and think about if we remove "similar people"
-
-    return output
-
 def main():
     """Checks and refines input data"""
 
@@ -122,7 +113,9 @@ def main():
             if check_col_vals(format_df, input_df):
                 print("All entries are acceptable values.")
 
-                output_df = remove_duplicates(input_df)
+                print("Rows before deleting duplicates:", input_df.shape[0])
+                output_df = input_df.drop_duplicates()
+                print("Rows after deleting duplicates:", output_df.shape[0])
 
                 #TODO: Write code which saves the output_df in a new .csv file
 

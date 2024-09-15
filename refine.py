@@ -1,24 +1,14 @@
 #!/usr/bin/env python
 
-#refine the dataset:
-
-#    develop a procedure to check that the data match expected format, remove duplicates, and perform further refinement. This procedure should ensure that:
-
-#        1. the values of variables are of the expected format (numbers, strings, etc.);
-
-#        2. the values of variables are admissible (e.g. are within a given range or are from the list of admissible values);
-
-#    in case of any inconsistencies and/or duplicates found, produce new file with refined data to be used in the subsequent analysis;
-
-#    this step must be automated to the point when it can be run with a single shell command to call an executable Python script specifying necessary argument(s);
-
-#    the refinement process should be documented (e.g. using comments in the code) in case one may need to modify and re-run it (although it’s not necessary to repeat it each time while re-running the analysis),
-
 import pandas as pd
 import sys
 
 def check_col_names(format, input):
-    """Checks that column names of input dataframe match required format"""
+    """Checks that column names of input dataframe match required format.
+    
+    If any column names don't match, prints error message and returns False.
+    Returns True if no mismatches are found.
+    """
 
     col_names_match = True
 
@@ -31,7 +21,11 @@ def check_col_names(format, input):
     return col_names_match
 
 def check_col_dtypes(format, input):
-    """Checks that data types of input dataframe columns are correct"""
+    """Checks that data types of input dataframe columns are correct.
+    
+    If any column is the wrong type, prints error message and returns False.
+    Returns True if no columns are the wrong type.
+    """
 
     col_dtypes_match = True
 
@@ -44,7 +38,10 @@ def check_col_dtypes(format, input):
     return col_dtypes_match
 
 def remove_bad_rows(format, input):
-    """Removes rows which contain invalid entries in at least one column"""
+    """Removes rows which contain invalid entries in at least one column.
+    
+    Returns a refined version of the input dataframe.
+    """
 
     output = input
     drop_list = []
@@ -52,11 +49,12 @@ def remove_bad_rows(format, input):
     for index in range(len(output.columns)):
 
         if format["Data_Type"][index] == int:
+            # Check that entries in every numerical column are within specified range
+
             column = output[format["Variable_Name"][index]]
             lower = format["Accepted_Vals"][index][0]
             upper = format["Accepted_Vals"][index][1]
-
-            # Check that entries in every numerical column are within specified range
+            
             for i in range(len(column)):
                 entry = column[i]
 
@@ -66,9 +64,10 @@ def remove_bad_rows(format, input):
                           lower, "and", upper)
                     drop_list.append(i)
         else:
+            # Check that entries in every categorical column are on the specified list
+
             column = output[format["Variable_Name"][index]]
 
-            # Check that entries in every categorical column are on the specified list
             for i in range(len(column)):
                 entry = column[i]
 
@@ -83,9 +82,15 @@ def remove_bad_rows(format, input):
     return output
 
 def main():
-    """Checks and refines input data"""
+    """Checks and refines input data.
+    
+    If input data has correct column names and data types, a refined
+    version of the input dataframe is saved to a separate csv file
+    called 'Refined_dataset.csv'.
+    """
 
-    # Create dataframe containing the required format for input data
+    # Create dataframe containing the required format for input data.
+    # This information is taken from 'Microdata_Teach_File_Overview.docx'.
     vars_info = [["Record_Number", int, [1, 63388]],
                 ["Region", object, ["S92000003"]],
                 ["RESIDENCE_TYPE", object, ["C", "P"]],
@@ -107,13 +112,14 @@ def main():
     format_df = pd.DataFrame(vars_info, columns = ["Variable_Name", "Data_Type", "Accepted_Vals"])
     input_df = pd.read_csv(sys.argv[1])
 
-    # Perform all checks on input data
+    # Perform checks on input data, and only refine if both checks pass
     if check_col_names(format_df, input_df):
         print("All column names match.")
 
         if check_col_dtypes(format_df, input_df):
             print("All data types match.")
 
+            # Refine dataset by removing invalid data and duplicate rows
             print("Rows before removing invalid entries:", input_df.shape[0])
             output_df = remove_bad_rows(format_df, input_df)
             print("Rows after removing invalid entries:", output_df.shape[0])
@@ -122,8 +128,9 @@ def main():
             output_df = output_df.drop_duplicates()
             print("Rows after deleting duplicates:", output_df.shape[0])
 
+            # Output refined dataset to a csv file to be used later
             output_df.to_csv("Refined_dataset.csv", index = False)
-            print("Created Refined_dataset.csv")
+            print("Successfully wrote to Refined_dataset.csv")
 
 if __name__ == "__main__":
     print("script name is", sys.argv[0])

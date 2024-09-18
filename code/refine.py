@@ -5,6 +5,8 @@
 import pandas as pd
 import sys
 
+#TODO check that "Age = 1" iff "Economic Activity = X"
+
 def check_col_names(format, input):
     """Checks that column names of input dataframe match required format.
     

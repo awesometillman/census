@@ -85,6 +85,25 @@ def remove_bad_rows(format, input):
                     
     return output
 
+def fix_child_rows(input):
+    """For any rows where the age category is 1, set the following to X:
+    * Economic Activity
+    * Occupation
+    * Industry
+    * Hours Worked Per Week
+    * Approximate Social Grade
+
+    This is because they are too young to work and hence must be labelled
+    X in all the above categories.
+    """
+    output = input
+
+    output.loc[output.age == "1", ]
+
+    #https://stackoverflow.com/questions/19226488/change-one-value-based-on-another-value-in-pandas
+
+    return output
+
 def main():
     """Checks and refines input data.
     

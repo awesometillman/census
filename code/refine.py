@@ -85,25 +85,6 @@ def remove_bad_rows(format, input):
                     
     return output
 
-def fix_child_rows(input):
-    """For any rows where the age category is 1, set the following to X:
-    * Economic Activity
-    * Occupation
-    * Industry
-    * Hours Worked Per Week
-    * Approximate Social Grade
-
-    This is because they are too young to work and hence must be labelled
-    X in all the above categories.
-    """
-    output = input
-
-    output.loc[output.age == "1", ]
-
-    #https://stackoverflow.com/questions/19226488/change-one-value-based-on-another-value-in-pandas
-
-    return output
-
 def main():
     """Checks and refines input data.
     
@@ -135,18 +116,26 @@ def main():
     format_df = pd.DataFrame(vars_info, columns = ["Variable_Name", "Data_Type", "Accepted_Vals"])
     input_df = pd.read_csv(sys.argv[1])
 
-    # Perform checks on input data, and only refine if both checks pass
+    # CHECK DATASET IS VALID
+    #========================
+    
+    # Make sure column names match expected values
     if check_col_names(format_df, input_df):
         print("All column names match.")
 
+        # Make sure column data types match expected values
         if check_col_dtypes(format_df, input_df):
             print("All data types match.")
 
-            # Refine dataset by removing invalid data and duplicate rows
+            # REFINE THE DATASET
+            #====================
+
+            # Remove invalid entries
             print("Rows before removing invalid entries:", input_df.shape[0])
             output_df = remove_bad_rows(format_df, input_df)
             print("Rows after removing invalid entries:", output_df.shape[0])
 
+            # Remove duplicate rows
             print("Rows before deleting duplicates:", output_df.shape[0])
             output_df = output_df.drop_duplicates()
             print("Rows after deleting duplicates:", output_df.shape[0])

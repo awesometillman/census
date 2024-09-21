@@ -5,8 +5,6 @@
 import pandas as pd
 import sys
 
-#TODO check that "Age = 1" iff "Economic Activity = X"
-
 def check_col_names(format, input):
     """Checks that column names of input dataframe match required format.
     
@@ -17,6 +15,8 @@ def check_col_names(format, input):
     col_names_match = True
 
     for i in range(len(input.columns)):
+        # Compare each column name to expected name stored in the format dataframe
+
         if not format["Variable_Name"][i] == input.columns[i]:
             print("Invalid column name: expected", format["Variable_Name"][i], "but got",
                   input.columns[i])
@@ -34,6 +34,8 @@ def check_col_dtypes(format, input):
     col_dtypes_match = True
 
     for i in range(len(input.columns)):
+        # Compare each column data type to expected type stored in the format dataframe
+        
         if not format["Data_Type"][i] == input.dtypes.iloc[i]:
             print("Invalid data type of", format["Variable_Name"][i] + ": expected", 
                   format["Data_Type"][i], "but got", input.dtypes.iloc[i])
